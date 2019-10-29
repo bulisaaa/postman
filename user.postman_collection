@@ -1,0 +1,4133 @@
+{
+	"info": {
+		"_postman_id": "ed5f38f5-ae86-47e9-9c30-078ffed70695",
+		"name": "TPay.Api QR  Tpay user",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Success payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51a2c5db-1745-4045-b934-c99d0c99946d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 1500\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+									"});",
+									"",
+									"pm.test(\"Body matches test\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Bearer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Status is OK or Unauthorized\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2fcd5f98-c126-4c59-bb92-3c7282150c75",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"RESULT_CODE: 000\");});",
+									"    ",
+									"    ",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"{{cardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Incorrect grant_type",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "333f9398-1951-4ffb-b10e-674af24146bc",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches test\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"unsupported_grant_type\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "scope",
+									"value": "TPayApi openid qrpaymen",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "111111111111",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "48209c16-192f-4236-98ce-37dda48cb50e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "678bb350-4465-4498-8629-6d63f15d8368",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Incorrect scope",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9bd5a3c5-4e47-4288-b309-5a82c6fb8b0a",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches test\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"invalid_scope\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "scope",
+									"value": "111",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "48209c16-192f-4236-98ce-37dda48cb50e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "678bb350-4465-4498-8629-6d63f15d8368",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Incorrect user/password",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "01a2c264-a04c-4a35-add8-f7d36bb6c860",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches test\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"invalid_client\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "234234",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "111",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "48209c16-192f-4236-98ce-37dda48cb50e",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "678bb350-4465-4498-8629-6d63f15d8368",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Validate scanned data",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "50e7840e-5346-408d-8dad-3e48ce1f5ce7",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d2bc6309-7f8f-44c9-b30f-744619138ff8",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"მაკ ბუქ პრო22222\");",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"200\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Incorrect QR code in URL",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f74b6f69-572f-4e38-8515-adb6bb45acb8",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "723d76b9-71ae-4502-9a0f-cfc3c2835111",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Invalid QR code\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrProd}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrProd}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Deleted QR code scanning",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f74b6f69-572f-4e38-8515-adb6bb45acb8",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d6eb48e-9f31-4185-bd9b-56e2f632d25d",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"CashDesk not exists or is deleted\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{deletedQr}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{deletedQr}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Pending company QR code",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f74b6f69-572f-4e38-8515-adb6bb45acb8",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0c3d59d3-9bf3-45cb-be9b-668b81b73e6b",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Company is Blocked, Declined or Pending\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{pendingCompQr}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{pendingCompQr}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "363b84ba-77de-4732-9054-bf717b2eba42",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0acd9b2-39a3-49dd-9395-fae0188e894d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Pending merchant QR code",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f74b6f69-572f-4e38-8515-adb6bb45acb8",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c664ccbc-4f75-4c41-90ba-f5d4f52c957a",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Company is Blocked, Declined or Pending\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{pendingMerchQr}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{pendingMerchQr}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "363b84ba-77de-4732-9054-bf717b2eba42",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0acd9b2-39a3-49dd-9395-fae0188e894d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Declined company QR code",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f74b6f69-572f-4e38-8515-adb6bb45acb8",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0c3d59d3-9bf3-45cb-be9b-668b81b73e6b",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Company is Blocked, Declined or Pending\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{declinedCompQr}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{declinedCompQr}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "363b84ba-77de-4732-9054-bf717b2eba42",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0acd9b2-39a3-49dd-9395-fae0188e894d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "QR code is not exists",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f74b6f69-572f-4e38-8515-adb6bb45acb8",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "537008cd-fc46-40d2-aa4c-563df3a40f38",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"QR code could not be found\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{declinedCompQr}}111",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{declinedCompQr}}111"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "363b84ba-77de-4732-9054-bf717b2eba42",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0acd9b2-39a3-49dd-9395-fae0188e894d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Create payment expired token",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f74b6f69-572f-4e38-8515-adb6bb45acb8",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e4435641-9ce6-446a-8cdd-87f99cca5b4f",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNDQkQzN0Q1Qjc2QTcyMTMzNTFFMTYzMDk1NDkyRjE4MTA3RkE1MEYiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJQTDAzMWJkcWNoTTFIaFl3bFVrdkdCQl9wUTgifQ.eyJuYmYiOjE1NTQyOTg5ODMsImV4cCI6MTU1NDMwMjU4MywiaXNzIjoiaHR0cHM6Ly90cGF5YWNjb3VudHN0YmMudGVzdC5sb2M6ODIyMSIsImF1ZCI6WyJodHRwczovL3RwYXlhY2NvdW50c3RiYy50ZXN0LmxvYzo4MjIxL3Jlc291cmNlcyIsIlRQYXlBcGkiXSwiY2xpZW50X2lkIjoiVFBheSIsInN1YiI6IjIwIiwiYXV0aF90aW1lIjoxNTU0Mjk4OTgzLCJpZHAiOiJsb2NhbCIsInNjb3BlIjpbInFycGF5bWVudCJdLCJhbXIiOlsicHdkIl19.KEG2_cQdor29dq4dOoEiy2ZITG21zso-cf2VnL1a0xjOuPHc0DyAFxn1PWxsLVY0dETvEIbQfiuSP3wpQaVVCP8cRPe6VfgUCSrVL__sczF4ClW3d3qo1IsOh220cmV_vXf3XbrxqCMUK-KyB51ladrN0i1NDXwklrtyxOtty0OX5oTDxm7MSVoSAnSBwc2wo59j8_AZI1albhBQQI-Zv7lgFspO4omvTGzwkE3-1YApc3fAEwo1SnQYfCrpv9B5Twm_gFtan_DAy3fgvBEw4Na47GJO-SxL70wIeQWqP02Q9RdOzNPwdRl7ugTfuGgIzOOyrCRz-jg12B5K2qzEaQ",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "363b84ba-77de-4732-9054-bf717b2eba42",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "e0acd9b2-39a3-49dd-9395-fae0188e894d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Payment expired token",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c09ca3c-068e-4343-a79f-68f195195b3a",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a1efa2f2-67fe-406b-bf64-e7ef9c683ce9",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "accessToken",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNDQkQzN0Q1Qjc2QTcyMTMzNTFFMTYzMDk1NDkyRjE4MTA3RkE1MEYiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJQTDAzMWJkcWNoTTFIaFl3bFVrdkdCQl9wUTgifQ.eyJuYmYiOjE1NTQyOTg5ODMsImV4cCI6MTU1NDMwMjU4MywiaXNzIjoiaHR0cHM6Ly90cGF5YWNjb3VudHN0YmMudGVzdC5sb2M6ODIyMSIsImF1ZCI6WyJodHRwczovL3RwYXlhY2NvdW50c3RiYy50ZXN0LmxvYzo4MjIxL3Jlc291cmNlcyIsIlRQYXlBcGkiXSwiY2xpZW50X2lkIjoiVFBheSIsInN1YiI6IjIwIiwiYXV0aF90aW1lIjoxNTU0Mjk4OTgzLCJpZHAiOiJsb2NhbCIsInNjb3BlIjpbInFycGF5bWVudCJdLCJhbXIiOlsicHdkIl19.KEG2_cQdor29dq4dOoEiy2ZITG21zso-cf2VnL1a0xjOuPHc0DyAFxn1PWxsLVY0dETvEIbQfiuSP3wpQaVVCP8cRPe6VfgUCSrVL__sczF4ClW3d3qo1IsOh220cmV_vXf3XbrxqCMUK-KyB51ladrN0i1NDXwklrtyxOtty0OX5oTDxm7MSVoSAnSBwc2wo59j8_AZI1albhBQQI-Zv7lgFspO4omvTGzwkE3-1YApc3fAEwo1SnQYfCrpv9B5Twm_gFtan_DAy3fgvBEw4Na47GJO-SxL70wIeQWqP02Q9RdOzNPwdRl7ugTfuGgIzOOyrCRz-jg12B5K2qzEaQ",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"{{cardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Payment incorrect paymentId",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cbce336d-d6ec-498d-8dba-318443373b67",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c43e71b3-2e25-401b-98f1-f39bd11675fe",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4aaa134c-e6eb-4b8f-b401-ed743af7621e",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Payment Not Found or already processed\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"tpay-374si719161044\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"{{cardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Incorrect card payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e7d49754-571f-4cfa-b195-7eb6201bdce0",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "772a4cd9-715f-4109-b2dc-a65f2fd67a94",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Card Not Found\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"00\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Negative amount payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "42212db3-820f-45aa-9757-4fe47eb7f5ab",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5cbdea33-257d-40d5-8671-fe3d6234a221",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Payment amount is invalid\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{negativeAmount}},\r\n  \"cardId\": \"{{cardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Zero amount payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8b5a65c1-ff02-488b-a452-aa6ae7d5950e",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3590f631-aac5-4213-a786-5bd981fa79e5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Payment amount is invalid\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{zeroAmount}},\r\n  \"cardId\": \"{{cardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Blocked company payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51a2c5db-1745-4045-b934-c99d0c99946d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 1500\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+									"});",
+									"",
+									"pm.test(\"Body matches test\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Bearer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Status is OK or Unauthorized\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3d205f89-e6d6-45a2-aa43-70bf8e78fc80",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Company is Blocked, Declined or Pending\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{blockedcompQr}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{blockedcompQr}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Blocked merchant payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51a2c5db-1745-4045-b934-c99d0c99946d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 1500\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+									"});",
+									"",
+									"pm.test(\"Body matches test\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Bearer\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Status is OK or Unauthorized\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f9b8688f-6891-497b-9ef0-e5fb33c078f0",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"QrPayment is Blocked, Declined or Pending\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{blockedmerchQr}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{blockedmerchQr}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Payment expired token",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "34d1b00c-0124-4926-9333-6809b448b829",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b2cad2a3-4578-453d-b473-c46a7a0fe571",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNDQkQzN0Q1Qjc2QTcyMTMzNTFFMTYzMDk1NDkyRjE4MTA3RkE1MEYiLCJ0eXAiOiJKV1QiLCJ4NXQiOiJQTDAzMWJkcWNoTTFIaFl3bFVrdkdCQl9wUTgifQ.eyJuYmYiOjE1NzA4MDE2ODgsImV4cCI6MTU3MDg4ODA4OCwiaXNzIjoiaHR0cHM6Ly9hY2NvdW50c3RwYXl0c3QudGJjYmFuay5nZS8iLCJhdWQiOlsiaHR0cHM6Ly9hY2NvdW50c3RwYXl0c3QudGJjYmFuay5nZS9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6IlRQYXkiLCJzdWIiOiIzMyIsImF1dGhfdGltZSI6MTU3MDgwMTY4OCwiaWRwIjoibG9jYWwiLCJzY29wZSI6WyJvcGVuaWQiLCJxcnBheW1lbnQiLCJUUGF5QXBpIl0sImFtciI6WyJwd2QiXX0.XeWo9VIuwGr7SjOfBjmfAiH0-0CKiAMgF25FY8Y7B9XAG5azpP_BWC4N0Ko4c_okdhMMoH0ceISzQZISGzzSx6Re3w16-iyO-KfcHXx1XQKsYto35ds7FR1iMc3O27RBQ0XSrOQ7iEW2oF7zYbfh99myxm1CDBwxc2h0LCS7hwq8GAJfmFsIkUyFr0PW600D8nZSA853jgYW-F4YkY4UAAQYX28csc8BtC04U5k8a696ErK8Kod4h_mku8WeT5Aa0V4FJwnUFxuu_kwD2J-EG17jFAhZc6jErgJntaP7D2PURJJQ0F0zTdF2bs_tAwl0Ui45O8sloqfhAi8wxuwUhQ"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"{{cardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "User does not have card payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "858367c6-e7ba-4fd3-b614-7ad727188816",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{nocardTpayUser}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "45f826ee-c662-48f7-b069-68ac40253614",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Card Not Found\");});",
+									"    "
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"{{cardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Deleted card payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "881e8479-c91c-4355-8edf-a0e700a7b880",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0873e0d0-a2cd-47de-b48b-a10e1d86e428",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Card Not Found\");});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"{{deleteCardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Non verified card payment",
+			"item": [
+				{
+					"name": "mobile usr token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "881e8479-c91c-4355-8edf-a0e700a7b880",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"mobileUserToken\", jsonData.access_token)",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{tpayPassword}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUser}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "{{grant_type_tpay}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "{{scopeTpayQr}}",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{tpayUserNumber}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{tpayUserPassword}}",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "33",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{accountsTbc}}/connect/token",
+							"host": [
+								"{{accountsTbc}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						},
+						"description": "Mobile user token"
+					},
+					"response": []
+				},
+				{
+					"name": "Scan qr and get payment info_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3dd6953e-9365-4f40-874b-6bd48d697a48",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonDataTwo = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"paymentId\", jsonDataTwo.paymentId)"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorizationn",
+								"value": "Bearer{{mobileUserToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment?QrContent={{checkoutWeb}}/qr/{{qrPositive}}",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment"
+							],
+							"query": [
+								{
+									"key": "QrContent",
+									"value": "{{checkoutWeb}}/qr/{{qrPositive}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay_Tpay",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0873e0d0-a2cd-47de-b48b-a10e1d86e428",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Card Not Found\");});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{mobileUserToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImIyODc3NzJjZjM4MTA1NmJlMGYwYWMyN2Y5MDI2ZmNiIiwidHlwIjoiSldUIn0.eyJuYmYiOjE1NTEyNjUwNzgsImV4cCI6MTU4MjgwMTA3OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4ODYwIiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODg2MC9yZXNvdXJjZXMiLCJUUGF5QXBpIl0sImNsaWVudF9pZCI6Im9ubGluZWJhbmsiLCJzY29wZSI6WyJxcnBheW1lbnQiXX0.i3jXoWctTkE3WgP50GBgAsDldtwDpi588JXwRbPJm8JSeubIsSA6aPNJp6IaUez49xAKy5lQNMOmjrYLBN3U-CDT4TWdKpGkacN_Buj7N5TcIAMUDZm0jwLBZgzhLEWyFP7qS7cPN-r3y6L8wuf6t2gpyNA6zg35MITMKnzLVRM97mJ4RyIechXZuluXSiRkKlPT3i2W1_GBZRvrlLfW0pSz1qgf0X4o2JxdHLyrR5kRmK226q69lG9uVWlg6CeY3ir52tTtEZ3y2zI6n3VcC4rWh-Wj0GFiaRao1wkz4RWoHnD7BDUW1AfyYJtneNdTPPSkIDE6JYPGMxILZ15qWw",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"paymentId\": \"{{paymentId}}\",\r\n  \"amount\": {{amount}},\r\n  \"cardId\": \"{{nonVerifiedCardIdTpay}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{tpayApi}}/v1/Qr/payment/pay",
+							"host": [
+								"{{tpayApi}}"
+							],
+							"path": [
+								"v1",
+								"Qr",
+								"payment",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
